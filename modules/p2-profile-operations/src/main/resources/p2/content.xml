@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?metadataRepository version='1.1.0'?>
+<repository name='p2composite.example.site' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
+  <properties size='2'>
+    <property name='p2.timestamp' value='1454084173055'/>
+    <property name='p2.compressed' value='true'/>
+  </properties>
+  <units size='9'>
+    <unit id='tooling.osgi.bundle.default' version='1.0.0' singleton='false'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' range='0.0.0' multiple='true' greedy='false'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='tooling.osgi.bundle.default' version='1.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' range='0.0.0' multiple='true' greedy='false'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='3'>
+          <instruction key='install'>org.eclipse.equinox.p2.touchpoint.eclipse.installBundle(bundle:${artifact})</instruction>
+          <instruction key='uninstall'>org.eclipse.equinox.p2.touchpoint.eclipse.uninstallBundle(bundle:${artifact})</instruction>
+          <instruction key='configure'>org.eclipse.equinox.p2.touchpoint.eclipse.setStartLevel(startLevel:4);</instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='p2composite.example.feature.feature.group' version='1.0.0.v20160129-1616' singleton='false'>
+      <update id='p2composite.example.feature.feature.group' range='[0.0.0,1.0.0.v20160129-1616)' severity='0'/>
+      <properties size='7'>
+        <property name='org.eclipse.equinox.p2.name' value='Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.feature'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.feature.group' version='1.0.0.v20160129-1616'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.plugin' range='[1.0.0.v20160129-1616,1.0.0.v20160129-1616]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.feature.jar' range='[1.0.0.v20160129-1616,1.0.0.v20160129-1616]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='v20160129-1616.p2composite.example.source.category' version='1.0.0.2--d9PM6h8s735E357K15E5E'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='P2 Example Composite Repository (Sources)'/>
+        <property name='org.eclipse.equinox.p2.description' value='P2 Example Composite Repository (Sources)'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='v20160129-1616.p2composite.example.source.category' version='1.0.0.2--d9PM6h8s735E357K15E5E'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.source.feature.group' range='[1.0.0.v20160129-1616,1.0.0.v20160129-1616]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='p2composite.example.feature.source.feature.jar' version='1.0.0.v20160129-1616'>
+      <properties size='7'>
+        <property name='org.eclipse.equinox.p2.name' value='Feature Developer Resources'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.feature'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+        <property name='maven-classifier' value='sources-feature'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.source.feature.jar' version='1.0.0.v20160129-1616'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='p2composite.example.feature.source' version='1.0.0.v20160129-1616'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='p2composite.example.feature.source' version='1.0.0.v20160129-1616'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='p2composite.example.feature.feature.jar' version='1.0.0.v20160129-1616'>
+      <properties size='6'>
+        <property name='org.eclipse.equinox.p2.name' value='Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.feature'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.feature.jar' version='1.0.0.v20160129-1616'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='p2composite.example.feature' version='1.0.0.v20160129-1616'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='p2composite.example.feature' version='1.0.0.v20160129-1616'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='p2composite.example.feature.source.feature.group' version='1.0.0.v20160129-1616' singleton='false'>
+      <update id='p2composite.example.feature.source.feature.group' range='[0.0.0,1.0.0.v20160129-1616)' severity='0'/>
+      <properties size='8'>
+        <property name='org.eclipse.equinox.p2.name' value='Feature Developer Resources'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.feature'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+        <property name='maven-classifier' value='sources-feature'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.source.feature.group' version='1.0.0.v20160129-1616'/>
+      </provides>
+      <requires size='3'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.feature.group' range='[1.0.0.v20160129-1616,1.0.0.v20160129-1616]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.plugin.source' range='[1.0.0.v20160129-1616,1.0.0.v20160129-1616]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.source.feature.jar' range='[1.0.0.v20160129-1616,1.0.0.v20160129-1616]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
+    <unit id='v20160129-1616.p2composite.example.category' version='1.0.0.2--d9PQvE8s735E357K15E5E'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='P2 Example Composite Repository'/>
+        <property name='org.eclipse.equinox.p2.description' value='P2 Example Composite Repository'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='v20160129-1616.p2composite.example.category' version='1.0.0.2--d9PQvE8s735E357K15E5E'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.feature.feature.group' range='[1.0.0.v20160129-1616,1.0.0.v20160129-1616]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='p2composite.example.plugin' version='1.0.0.v20160129-1616'>
+      <update id='p2composite.example.plugin' range='[0.0.0,1.0.0.v20160129-1616)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Plugin'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Lorenzo Bettini'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.plugin'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.plugin' version='1.0.0.v20160129-1616'/>
+        <provided namespace='osgi.bundle' name='p2composite.example.plugin' version='1.0.0.v20160129-1616'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='0'>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='p2composite.example.plugin' version='1.0.0.v20160129-1616'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: p2composite.example.plugin&#xA;Bundle-Version: 1.0.0.v20160129-1616
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='p2composite.example.plugin.source' version='1.0.0.v20160129-1616' singleton='false'>
+      <update id='p2composite.example.plugin.source' range='[0.0.0,1.0.0.v20160129-1616)' severity='0'/>
+      <properties size='9'>
+        <property name='df_LT.bundleVendor' value='Lorenzo Bettini'/>
+        <property name='df_LT.bundleName' value='Plugin Source'/>
+        <property name='org.eclipse.equinox.p2.name' value='%bundleName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%bundleVendor'/>
+        <property name='org.eclipse.equinox.p2.bundle.localization' value='OSGI-INF/l10n/bundle-src'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.plugin'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+        <property name='maven-classifier' value='sources'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='p2composite.example.plugin.source' version='1.0.0.v20160129-1616'/>
+        <provided namespace='osgi.bundle' name='p2composite.example.plugin.source' version='1.0.0.v20160129-1616'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='source' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='p2composite.example.plugin.source' version='1.0.0.v20160129-1616'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: p2composite.example.plugin.source&#xA;Bundle-Version: 1.0.0.v20160129-1616
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+  </units>
+</repository>

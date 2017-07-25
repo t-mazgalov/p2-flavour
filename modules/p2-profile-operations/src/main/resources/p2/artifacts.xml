@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?artifactRepository version='1.1.0'?>
+<repository name='p2composite.example.site' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
+  <properties size='4'>
+    <property name='p2.timestamp' value='1498993841183'/>
+    <property name='p2.compressed' value='true'/>
+    <property name='publishPackFilesAsSiblings' value='true'/>
+    <property name='p2.runnable' value='true'/>
+  </properties>
+  <mappings size='5'>
+    <rule filter='(&amp; (classifier=osgi.bundle) (format=packed))' output='${repoUrl}/plugins/${id}_${version}.jar.pack.gz'/>
+    <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
+    <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
+    <rule filter='(&amp; (classifier=org.eclipse.update.feature) (format=packed))' output='${repoUrl}/features/${id}_${version}.jar.pack.gz'/>
+    <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
+  </mappings>
+  <artifacts size='4'>
+    <artifact classifier='org.eclipse.update.feature' id='p2composite.example.feature.source' version='1.0.0.v20160129-1616'>
+      <properties size='7'>
+        <property name='artifact.size' value='2104'/>
+        <property name='download.size' value='2104'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.feature'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+        <property name='maven-classifier' value='sources-feature'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='p2composite.example.feature' version='1.0.0.v20160129-1616'>
+      <properties size='6'>
+        <property name='artifact.size' value='1944'/>
+        <property name='download.size' value='1944'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.feature'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='p2composite.example.plugin.source' version='1.0.0.v20160129-1616'>
+      <properties size='6'>
+        <property name='artifact.size' value='3567'/>
+        <property name='download.size' value='3567'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.plugin'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+        <property name='maven-classifier' value='sources'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='p2composite.example.plugin' version='1.0.0.v20160129-1616'>
+      <properties size='5'>
+        <property name='artifact.size' value='5216'/>
+        <property name='download.size' value='5216'/>
+        <property name='maven-groupId' value='p2composite.example'/>
+        <property name='maven-artifactId' value='p2composite.example.plugin'/>
+        <property name='maven-version' value='1.0.0-SNAPSHOT'/>
+      </properties>
+    </artifact>
+  </artifacts>
+</repository>

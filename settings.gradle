@@ -1,0 +1,11 @@
+rootProject.name = 'p2-flavours'
+
+add 'modules'
+
+def add(def directory) {
+    directory = file directory
+    directory.listFiles().each {
+        if(it.isDirectory())
+            include ":$directory.name:$it.name"
+    }
+}

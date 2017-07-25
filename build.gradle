@@ -1,0 +1,91 @@
+import name.mazgalov.equinox.task.CreateEquinoxContainer
+
+group 'name.mazgalov.p2.flavours'
+version '1.0-SNAPSHOT'
+
+apply plugin: "name.mazgalov.equinox"
+
+allprojects {
+    repositories {
+        maven {
+            url 'http://dist.wso2.org/maven2/'
+        }
+    }
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+repositories {
+    ivy {
+        url 'http://build.eclipse.org/rt/virgo/ivy/bundles/release'
+    }
+    ivy {
+        url 'http://build.eclipse.org/rt/virgo/ivy/bundles/milestone'
+    }
+    maven {
+        url 'http://repository.springsource.com/maven/bundles/external'
+    }
+}
+
+configurations {
+    server
+    bundles
+    boot
+}
+
+dependencies {
+//    p2 'org.eclipse.platform:org.eclipse.equinox.p2.repository:2.3.200'
+//    p2 'org.eclipse.platform:org.eclipse.equinox.p2.metadata:2.3.100'
+//    p2 group: 'org.eclipse.equinox', name: 'org.eclipse.equinox.p2.core', version: '2.3.0.v20130327-2119'
+//    equinox  group: 'org.eclipse.equinox', name: 'org.eclipse.equinox.common', version: '3.6.100.v20120522-1841'
+    bundles project(':modules:p2-profile-operations')
+    bundles project(':modules:p2-angularjs-ui')
+    bundles project(':modules:p2-profile-controller')
+    bundles project(':modules:jersey-app-config')
+
+    server 'javax.transaction:com.springsource.javax.transaction:1.1.0'
+    server 'javax.websocket:javax.websocket-api:1.1'
+    server 'javax.mail:mail:1.4.7'
+    server (group:'org.eclipse.gemini', name: 'org.eclipse.gemini.web.tomcat', version: '3.0.0.RC1', configuration: 'runtime') {
+        exclude group:'org.eclipse.virgo.mirrored', module:'org.eclipse.osgi'
+    }
+    server (group:'org.eclipse.gemini', name: 'org.eclipse.gemini.web.extender', version: '3.0.0.RC1', configuration: 'runtime') {
+        exclude group:'org.eclipse.virgo.mirrored', module:'org.eclipse.osgi'
+    }
+
+    boot 'org.codehaus.groovy:groovy-all:2.3.11'
+}
+
+task 'createFlavoursContainer', type: CreateEquinoxContainer, {
+    containerName = 'P2F'
+    equinoxNotation = [group:'org.eclipse.platform', name: 'org.eclipse.osgi', version: '3.11.3']
+    install 2, configurations.server
+    install 3, configurations.boot
+    install 4, configurations.bundles
+}
+
+task startFlavoursContainer(type: Exec) {
+    dependsOn 'createFlavoursContainer'
+    commandLine "$buildDir/P2F/bin/equinox.bat"
+}
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'gradle.plugin.name.mazgalov:gradle-equinox:0.1.1.0'
+    }
+}
+
+task clean {
+    doLast {
+        buildDir.deleteDir()
+    }
+}

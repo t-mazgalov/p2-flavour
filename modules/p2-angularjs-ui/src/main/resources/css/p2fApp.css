@@ -1,0 +1,44 @@
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+.nav-link {
+    font-weight: bold;
+}
+.nav-link .nav-link-title {
+    margin-left: 20px;
+}
+.logo {
+    width: 200px;
+    height: 200px;
+}
+
+
+
+
+.metadata {
+    padding: 3px;
+    background-color: SteelBlue;
+    color: White;
+    width: 75px;
+    display: inline-block;
+    text-align: center;
+}
+.artifacts {
+    padding: 3px;
+    background-color: DarkCyan;
+    color: White;
+    width: 75px;
+    display: inline-block;
+    text-align: center;
+}
+.iu {
+    padding: 3px;
+    background-color: Silver;
+    color: White;
+    display: inline-block;
+    text-align: center;
+}
+.iu-version {
+    color: Gray;
+    display: inline-block;
+}

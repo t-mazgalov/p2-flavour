@@ -1,0 +1,11 @@
+dependencies {
+    providedCompile 'org.codehaus.groovy:groovy-all:2.3.11'
+    providedCompile 'org.osgi:org.osgi.core:6.0.0'
+}
+
+jar {
+    manifest {
+        instruction 'Bundle-Activator', 'name.mazgalov.p2.flavours.ui.Activator'
+        instruction 'Web-ContextPath', '/p2f'
+    }
+}
