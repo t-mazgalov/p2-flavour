@@ -89,6 +89,7 @@ class FrameworkOperatorImpl implements FrameworkOperator{
                 Paths.get(profileLocation).resolve('configuration').toUri().path
         profileProperties[IProfile.PROP_LAUNCHER_CONFIGURATION] =
                 Paths.get(profileLocation).resolve('eclipse.ini.ignored').toUri().path
+        profileProperties[IProfile.PROP_INSTALL_FEATURES] = 'true'
 
         profileRegistry.getProfile(profileId)?:profileRegistry.addProfile(profileId,profileProperties)
 
