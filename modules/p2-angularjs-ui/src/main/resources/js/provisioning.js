@@ -2,7 +2,7 @@ angular
     .module('AppP2F')
     .controller('ProvisioningController', function($scope, $http) {
         $scope.loadProvLists = function() {
-            $http
+            return $http
                 .get("/rs/provisioning-lists/list")
                 .then(function(response) {
                     $scope.provLists = response.data;
@@ -10,7 +10,7 @@ angular
         }
 
         $scope.loadProfiles = function() {
-            $http
+           return  $http
                 .get("/rs/profiles/list")
                 .then(function(response) {
                     $scope.profiles = response.data;

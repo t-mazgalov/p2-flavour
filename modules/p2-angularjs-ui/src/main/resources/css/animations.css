@@ -1,8 +1,22 @@
-.fade.ng-show {
-  transition:0.5s linear all;
+md-card {
+  transition:all linear 0.2s;
+}
+
+md-card.ng-hide {
   opacity:0;
 }
-.fade.ng-hide {
-  transition:0.5s linear all;
+
+md-list-item.ng-move,
+md-list-item.ng-enter,
+md-list.ng-move,
+md-list.ng-enter {
+  transition:all linear 0.2s;
   opacity:0;
+}
+
+md-list-item.ng-move.ng-move-active,
+md-list-item.ng-enter.ng-enter-active,
+md-list.ng-move.ng-move-active,
+md-list.ng-enter.ng-enter-active {
+  opacity:1;
 }

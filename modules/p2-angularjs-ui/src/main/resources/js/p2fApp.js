@@ -1,5 +1,5 @@
 angular
-    .module('AppP2F', ['ngMaterial', 'ngRoute'])
+    .module('AppP2F', ['ngMaterial', 'ngRoute', 'ngAnimate'])
     .config(function($mdThemingProvider) {
       $mdThemingProvider
           .theme('default')

@@ -12,7 +12,7 @@ angular
         checkCurrentProfile();
 
         $scope.loadProfiles = function() {
-            $http
+            return $http
                 .get("/rs/profiles/list")
                 .then(function(response) {
                     $scope.profiles = response.data;

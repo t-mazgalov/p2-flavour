@@ -2,10 +2,13 @@ angular
     .module('AppP2F')
     .controller('RepositoriesController', function($scope, $http, $mdDialog) {
         function getRepos() {
+            $scope.disabledProgressListRepos = false;
+
             $http
                 .get("/rs/repos/list")
                 .then(function(response) {
                     $scope.repos = response.data;
+                    $scope.disabledProgressListRepos = true;
                 })
         }
 
@@ -19,6 +22,7 @@ angular
 
         function setCurrentProvList(provList) {
             $scope.currentProvList = provList;
+            $scope.disabledProgressManageProvList = true;
         }
 
         getRepos() // Initial call
@@ -26,6 +30,7 @@ angular
 
         $scope.listMetadataRepo = function(profileId, repoLocation) {
             $scope.loadedRepoCard = true;
+            $scope.disabledProgressListRepo = false;
 
             $http
                 .get("/rs/repos/list/" + profileId + "/metadata/" + repoLocation)
@@ -46,13 +51,15 @@ angular
                         }
                     }
                     $scope.ius = responseData;
-                    $scope.listedRepoLocation = repoLocation
+                    $scope.listedRepoLocation = repoLocation;
                     getRepos(); // Update repos
+                    $scope.disabledProgressListRepo = true;
                 });
         }
 
         $scope.listArtifactsRepo = function(profileId, repoLocation) {
             $scope.loadedRepoCard = true;
+            $scope.disabledProgressListRepo = false;
 
             $http
                 .get("/rs/repos/list/" + profileId + "/artifacts/" + repoLocation)
@@ -62,13 +69,16 @@ angular
                         responseData[i].iuType = 'artifact-key'
                     }
                     $scope.ius = responseData;
-                    $scope.listedRepoLocation = repoLocation
+                    $scope.listedRepoLocation = repoLocation;
                     getRepos(); // Update repos
+                    $scope.disabledProgressListRepo = true;
                 });
         }
 
         $scope.loadRepo = function() {
             $scope.loadedRepoCard = true;
+            $scope.disabledProgressListRepo = false;
+
             $http
                 .get("/rs/profiles/current")
                 .then(function(response) {
@@ -83,9 +93,25 @@ angular
                     $http
                         .post("/rs/repos/load", params)
                         .then(function(loadResponse) {
-                            $scope.ius = loadResponse.data;
+                            var responseData = loadResponse.data;
+                            for(i in responseData) {
+                                if(responseData[i].artifacts.length > 0) {
+                                    var classifier = responseData[i].artifacts[0].classifier;
+                                    if(classifier === 'org.eclipse.update.feature') {
+                                        responseData[i].iuType = 'feature'
+                                    } else if(classifier === 'osgi.bundle') {
+                                        responseData[i].iuType = 'bundle'
+                                    } else {
+                                        responseData[i].iuType = 'installable-unit'
+                                    }
+                                } else {
+                                    responseData[i].iuType = 'installable-unit'
+                                }
+                            }
+                            $scope.ius = responseData;
                             $scope.listedRepoLocation = $scope.metadataLocation;
                             getRepos(); // Update repos
+                            $scope.disabledProgressListRepo = true;
                         });
 
                 });
@@ -102,7 +128,7 @@ angular
         }
 
         $scope.loadProfiles = function() {
-            $http
+            return $http
                 .get("/rs/profiles/list")
                 .then(function(response) {
                     $scope.profiles = response.data;
@@ -110,6 +136,8 @@ angular
         }
 
         $scope.addProvListIUs = function(provList,iu,listedRepoLocation) {
+            $scope.disabledProgressManageProvList = false;
+
             var params = {
                 'id': provList.id,
                 'installableUnits': [{
@@ -135,6 +163,8 @@ angular
         }
 
         $scope.removeProvListIUs = function(provList,iu) {
+            $scope.disabledProgressManageProvList = false;
+
             var params = {
                 'id': provList.id,
                 'installableUnits': [{
@@ -169,6 +199,8 @@ angular
 
             $mdDialog.show(confirm).then(
                 function(name) {
+                    $scope.disabledProgressManageProvList = false;
+
                     var params = {
                         'name': name,
                         'installableUnits': [{

@@ -12,6 +12,7 @@
                   </md-card-header-text>
                 </md-card-header>
                 <md-content>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressListRepos"></md-progress-linear>
                     <md-list class="md-dense" ng-repeat="repo in repos" flex>
                         <md-list-item class="md-3-line" ng-repeat="metadataRepository in repo.metadataRepositories">
                            <img ng-src="img/icons/metadata.png" class="md-avatar" alt="Metadata Repository" />
@@ -87,6 +88,7 @@
                     </md-card-header-text>
                 </md-card-header>
                 <md-content>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressListRepo"></md-progress-linear>
                     <md-list class="md-dense" flex>
                         <md-list-item class="md-3-line" ng-repeat="iu in ius">
                             <img
@@ -128,7 +130,7 @@
             </md-card>
         </div>
         <div flex-xs flex-gt-xs="50" layout="column">
-            <md-card ng-if="currentProvList">
+            <md-card ng-show="currentProvList">
                 <md-card-header>
                     <md-card-avatar>
                         <md-icon class="material-icons">view_list</md-icon>
@@ -139,6 +141,7 @@
                     </md-card-header-text>
                 </md-card-header>
                 <md-content>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressManageProvList"></md-progress-linear>
                     <md-list class="md-dense" flex>
                         <md-list-item class="md-3-line" ng-repeat="iu in currentProvList.installableUnits">
                             <img
