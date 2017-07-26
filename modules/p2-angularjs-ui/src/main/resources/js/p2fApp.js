@@ -17,6 +17,9 @@ angular
         .when('/repositories', {
             templateUrl: 'jsp/repositories.jsp'
         })
+        .when('/provision', {
+            templateUrl: 'jsp/provisioning.jsp'
+        })
     })
     .controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $route, $routeParams, $location) {
         $scope.toggleLeft = buildToggler('left');

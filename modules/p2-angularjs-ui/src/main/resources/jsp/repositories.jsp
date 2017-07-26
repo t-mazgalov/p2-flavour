@@ -106,8 +106,8 @@
                                 </md-button>
                                 <md-menu-content>
                                     <div ng-repeat="provList in provLists">
-                                        <md-menu-item ng-if="loadedRepoProfileId === provList.profileId">
-                                            <md-button ng-click="addProvListIUs(provList,iu)">
+                                        <md-menu-item>
+                                            <md-button ng-click="addProvListIUs(provList,iu,listedRepoLocation)">
                                                 <md-icon class="material-icons">add_box</md-icon>
                                                 {{provList.name}}
                                             </md-button>
@@ -115,7 +115,7 @@
                                     </div>
                                     <md-menu-divider></md-menu-divider>
                                     <md-menu-item>
-                                        <md-button ng-click="showCreateListDialog($event,iu)">
+                                        <md-button ng-click="showCreateListDialog($event,iu,listedRepoLocation)">
                                             <md-icon class="material-icons">create</md-icon>
                                             Create new IUs list
                                         </md-button>
@@ -135,7 +135,7 @@
                     </md-card-avatar>
                     <md-card-header-text>
                         <span class="md-title">Provisioning list: {{currentProvList.name}}</span>
-                        <span class="md-subhead">Profile: {{currentProvList.profileId}}</span>
+                        <span class="md-subhead">ID: {{currentProvList.id}}</span>
                     </md-card-header-text>
                 </md-card-header>
                 <md-content>

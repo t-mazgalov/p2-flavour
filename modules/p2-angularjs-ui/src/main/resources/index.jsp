@@ -16,6 +16,7 @@
     <script src="js/home.js"></script>
     <script src="js/repositories.js"></script>
     <script src="js/profiles.js"></script>
+    <script src="js/provisioning.js"></script>
 </head>
 <body ng-app="AppP2F" ng-cloak>
     <div ng-controller="AppCtrl" layout-fill layout="column" ng-cloak>
@@ -51,6 +52,12 @@
                 <span>
                     <md-icon class="material-icons">input</md-icon>
                     <span class="nav-link-title">Repositories</span>
+                </span>
+            </md-button>
+            <md-button ng-href="#provision?name=Provision" layout-padding layout="row" class="nav-link">
+                <span>
+                    <md-icon class="material-icons">file_download</md-icon>
+                    <span class="nav-link-title">Provision</span>
                 </span>
             </md-button>
           </md-content>

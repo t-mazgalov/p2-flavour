@@ -26,7 +26,6 @@ angular
 
         $scope.listMetadataRepo = function(profileId, repoLocation) {
             $scope.loadedRepoCard = true;
-            $scope.loadedRepoProfileId = profileId;
 
             $http
                 .get("/rs/repos/list/" + profileId + "/metadata/" + repoLocation)
@@ -70,19 +69,25 @@ angular
 
         $scope.loadRepo = function() {
             $scope.loadedRepoCard = true;
-            var params = {
-                'profileName': $scope.selectedProfile.name,
-                'profileLocation': $scope.selectedProfile.location,
-                'metadataLocation': $scope.metadataLocation,
-                'artifactsLocation': $scope.artifactsLocation
-            };
-
             $http
-                .post("/rs/repos/load", params)
+                .get("/rs/profiles/current")
                 .then(function(response) {
-                    $scope.ius = response.data;
-                    $scope.listedRepoLocation = $scope.metadataLocation;
-                    getRepos(); // Update repos
+                    var systemProfile = response.data;
+                    var params = {
+                        'profileName': systemProfile.name,
+                        'profileLocation': systemProfile.location,
+                        'metadataLocation': $scope.metadataLocation,
+                        'artifactsLocation': $scope.artifactsLocation
+                    };
+
+                    $http
+                        .post("/rs/repos/load", params)
+                        .then(function(loadResponse) {
+                            $scope.ius = loadResponse.data;
+                            $scope.listedRepoLocation = $scope.metadataLocation;
+                            getRepos(); // Update repos
+                        });
+
                 });
         }
 
@@ -104,12 +109,13 @@ angular
                 });
         }
 
-        $scope.addProvListIUs = function(provList,iu) {
+        $scope.addProvListIUs = function(provList,iu,listedRepoLocation) {
             var params = {
                 'id': provList.id,
                 'installableUnits': [{
                     'id': iu.id,
                     'type': iu.iuType,
+                    'repository': listedRepoLocation,
                     'major': iu.version.major,
                     'minor': iu.version.minor,
                     'micro': iu.version.micro,
@@ -152,7 +158,7 @@ angular
                 });
         }
 
-        $scope.showCreateListDialog = function(event, iu) {
+        $scope.showCreateListDialog = function(event, iu, listedRepoLocation) {
             var confirm = $mdDialog.prompt()
                 .title('Create new installable units list')
                 .placeholder('List name')
@@ -165,10 +171,10 @@ angular
                 function(name) {
                     var params = {
                         'name': name,
-                        'profileId': $scope.loadedRepoProfileId,
                         'installableUnits': [{
                             'id': iu.id,
                             'type': iu.iuType,
+                            'repository': listedRepoLocation,
                             'major': iu.version.major,
                             'minor': iu.version.minor,
                             'micro': iu.version.micro,
