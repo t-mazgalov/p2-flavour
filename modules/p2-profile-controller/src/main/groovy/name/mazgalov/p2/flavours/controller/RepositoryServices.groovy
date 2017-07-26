@@ -1,12 +1,15 @@
 package name.mazgalov.p2.flavours.controller
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import name.mazgalov.p2.flavours.controller.internal.OsgiVersionSerializer
 import name.mazgalov.p2.flavours.controller.internal.RepositoryRegistration
 import name.mazgalov.p2.flavours.operations.ArtifactsRepositoryOperator
 import name.mazgalov.p2.flavours.operations.FrameworkOperator
 import name.mazgalov.p2.flavours.operations.MetadataRepositoryOperator
 import name.mazgalov.p2.flavours.operations.Profile
 import name.mazgalov.p2.flavours.operations.ProfilesCache
+import org.eclipse.equinox.internal.p2.metadata.OSGiVersion
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository
 import org.osgi.service.component.annotations.Component
@@ -58,7 +61,9 @@ class RepositoryServices {
         // Using Gson instead of the Jersey parser because
         // Jankson expect all used classes to be serializable.
         // org.eclipse.equinox.internal.p2.metadata.VersionFormat is not
-        new Gson().toJson(ius)
+        GsonBuilder gsonBuilder = new GsonBuilder()
+        gsonBuilder.registerTypeAdapter(OSGiVersion.class, new OsgiVersionSerializer())
+        gsonBuilder.create().toJson(ius)
     }
 
     @GET

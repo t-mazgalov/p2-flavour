@@ -1,9 +1,17 @@
 package name.mazgalov.p2.flavours.controller
 
+import com.google.gson.Gson
+import name.mazgalov.p2.flavours.controller.internal.ProfileProvisioningContext
 import name.mazgalov.p2.flavours.operations.ExistingResourceException
+import name.mazgalov.p2.flavours.operations.FrameworkOperator
+import name.mazgalov.p2.flavours.operations.MetadataRepositoryOperator
+import name.mazgalov.p2.flavours.operations.ProfilesCache
 import name.mazgalov.p2.flavours.operations.ProvisioiningListsCache
+import name.mazgalov.p2.flavours.operations.ProvisioningOptions
 import name.mazgalov.p2.flavours.operations.SimplifiedInstallableUnit
 import name.mazgalov.p2.flavours.operations.SimplifiedProvisioningList
+import org.eclipse.equinox.internal.p2.metadata.InstallableUnit
+import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
 import org.osgi.service.component.annotations.ReferenceCardinality
@@ -20,6 +28,9 @@ import javax.ws.rs.core.MediaType
 @Component(immediate = true, service = ProvisioningListServices.class, property = 'service.type=jersey')
 class ProvisioningListServices {
     private ProvisioiningListsCache provisioningListsCache = null
+    private MetadataRepositoryOperator metadataRepositoryOperator = null
+    private ProfilesCache profilesCache = null
+    private FrameworkOperator frameworkOperator = null
 
     @GET
     @Path("list")
@@ -60,12 +71,42 @@ class ProvisioningListServices {
         try {
             createdProvisioningList = provisioningListsCache
                     .createSimplifiedProvisioningList(
-                    provisioningList.name, provisioningList.profileId, provisioningList.installableUnits)
+                    provisioningList.name, provisioningList.installableUnits)
         } catch (ExistingResourceException e) {
             throw new WebApplicationException(e)
         }
 
         createdProvisioningList
+    }
+
+    @POST
+    @Path("provision")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    def provisionProvisioningList(ProfileProvisioningContext profileProvisioningContext) {
+        Map<String, List<SimplifiedInstallableUnit>> repositories = [:]
+        profileProvisioningContext.simplifiedProvisioningList.installableUnits.each {
+            if (repositories[it.repository] == null)
+                repositories[it.repository] = []
+            repositories[it.repository] << it
+        }
+
+        List<InstallableUnit> ius = []
+        repositories.each { key, value ->
+            IMetadataRepository metadataRepository =
+                    metadataRepositoryOperator.refreshRepository(
+                            new URI(key),
+                            profilesCache.getProfile(profilesCache.runningProfile.id).agent)
+            ius += metadataRepositoryOperator.getInstallableUnits(metadataRepository, value)
+        }
+        ProvisioningOptions provisioningOptions = new ProvisioningOptions(
+                metadataRepositories: repositories.collect {new URI(it.key)},
+                artifactRepositories: repositories.collect {new URI(it.key)},
+                profileId: profileProvisioningContext.profile.name,
+                agent: profilesCache.getProfile(profileProvisioningContext.profile.id).agent,
+                installableUnits: ius)
+
+        new Gson().toJson(frameworkOperator.installProfile(provisioningOptions))
     }
 
     @DELETE
@@ -84,5 +125,45 @@ class ProvisioningListServices {
 
     def unbindProvisioningListsCache(ProvisioiningListsCache provisioningListsCache, Map<String, ?> properties) {
         this.provisioningListsCache = null
+    }
+
+    @Reference(
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.STATIC,
+            unbind = 'unbindMetadataRepositoryOperator')
+    def bindMetadataRepositoryOperator(
+            MetadataRepositoryOperator metadataRepositoryOperator,
+            Map<String, ?> properties) {
+        this.metadataRepositoryOperator = metadataRepositoryOperator
+    }
+
+    def unbindMetadataRepositoryOperator(
+            MetadataRepositoryOperator metadataRepositoryOperator,
+            Map<String, ?> properties) {
+        this.metadataRepositoryOperator = null
+    }
+
+    @Reference(
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.STATIC,
+            unbind = 'unbindProfilesCache')
+    def bindProfilesCache(ProfilesCache profilesCache, Map<String, ?> properties) {
+        this.profilesCache = profilesCache
+    }
+
+    def unbindProfilesCache(ProfilesCache profilesCache, Map<String, ?> properties) {
+        this.profilesCache = null
+    }
+
+    @Reference(
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.STATIC,
+            unbind = 'unbindFrameworkOperator')
+    def bindFrameworkOperator(FrameworkOperator frameworkOperator, Map<String, ?> properties) {
+        this.frameworkOperator = frameworkOperator
+    }
+
+    def unbindFrameworkOperator(FrameworkOperator frameworkOperator, Map<String, ?> properties) {
+        this.frameworkOperator = null
     }
 }
