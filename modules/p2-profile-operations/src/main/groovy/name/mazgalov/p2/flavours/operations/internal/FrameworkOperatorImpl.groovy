@@ -109,7 +109,7 @@ class FrameworkOperatorImpl implements FrameworkOperator{
             job.addJobChangeListener(
                     new JobChangeAdapter() {
                         void done(IJobChangeEvent event) {
-                            provisioningAgent.stop()
+                            provisioningOptions.agent.stop()
                         }
                     }
             )

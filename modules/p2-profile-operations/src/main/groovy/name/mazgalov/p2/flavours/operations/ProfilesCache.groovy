@@ -11,6 +11,6 @@ interface ProfilesCache {
     Profile getRunningProfile()
     void setRunningProfile(long id)
 
-    def createProfile(String profileName, String profileLocation) throws ExistingResourceException
+    Profile createProfile(String profileName, String profileLocation) throws ExistingResourceException
     def removeProfile(String profileName, String profileLocation) throws NonExistingResourceException
 }

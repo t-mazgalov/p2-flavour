@@ -52,6 +52,13 @@ class ProfilesCacheImpl implements ProfilesCache {
         runningProfile = profiles.find { it.running }
     }
 
+    protected createSystemProfile(String name, String location) {
+        Profile systemProfile = createProfile(name, location)
+        systemProfile.running = true
+
+        runningProfile = systemProfile
+    }
+
     @Activate
     def activate(BundleContext bundleContext,
                  Map<String,Object> config) {
@@ -59,8 +66,10 @@ class ProfilesCacheImpl implements ProfilesCache {
         profilesCachePath = configurationArea.resolve(CACHE_FILE)
 
         def profilesCacheFile = profilesCachePath.toFile()
-        if(profilesCacheFile.createNewFile() || profilesCacheFile.text == '')
-            return // Nothing to parse if the file is new (empty)
+        if(profilesCacheFile.createNewFile() || profilesCacheFile.text == '') {
+            createSystemProfile('system', configurationArea.resolve('systemProfile').toString())
+            return
+        }
 
         def slurper = new JsonSlurper()
         slurper.parse(profilesCacheFile).each {
@@ -99,7 +108,7 @@ class ProfilesCacheImpl implements ProfilesCache {
     }
 
     @Override
-    def createProfile(String profileName, String profileLocation) throws ExistingResourceException{
+    Profile createProfile(String profileName, String profileLocation) throws ExistingResourceException{
         def profileId = System.currentTimeMillis()
         Profile profile = new Profile(id: profileId, name: profileName, location: profileLocation)
 
@@ -114,6 +123,7 @@ class ProfilesCacheImpl implements ProfilesCache {
         profiles << profile
 
         storeCache()
+        profile
     }
 
     @Override

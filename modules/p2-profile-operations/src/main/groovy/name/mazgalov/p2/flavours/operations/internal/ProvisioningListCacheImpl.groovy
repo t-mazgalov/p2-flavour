@@ -1,6 +1,7 @@
 package name.mazgalov.p2.flavours.operations.internal
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import groovy.json.JsonSlurper
 import name.mazgalov.p2.flavours.operations.ExistingResourceException
 import name.mazgalov.p2.flavours.operations.ProvisioiningListsCache
@@ -39,12 +40,11 @@ class ProvisioningListCacheImpl implements ProvisioiningListsCache{
         if(provisioningListsCacheFile.createNewFile() || provisioningListsCacheFile.text == '')
             return // Nothing to parse if the file is new (empty)
 
-        def slurper = new JsonSlurper()
+        JsonSlurper slurper = new JsonSlurper()
         slurper.parse(provisioningListsCacheFile).each {
             simplifiedProvisioningLists << new SimplifiedProvisioningList(
                     id: it.id,
                     name: it.name,
-                    profileId: it.profileId,
                     installableUnits: it.installableUnits)
         }
     }
@@ -55,24 +55,24 @@ class ProvisioningListCacheImpl implements ProvisioiningListsCache{
     }
 
     @Override
-    SimplifiedProvisioningList getSimplifiedProvisioningList(Object provisioningListId) {
+    SimplifiedProvisioningList getSimplifiedProvisioningList(long provisioningListId) {
         simplifiedProvisioningLists.find { it.id == provisioningListId }
     }
 
     @Override
-    SimplifiedProvisioningList getSimplifiedProvisioningList(Object name, Object profileId) {
-        simplifiedProvisioningLists.find { it.name == name && it.profileId == profileId }
+    SimplifiedProvisioningList getSimplifiedProvisioningList(String name) {
+        simplifiedProvisioningLists.find { it.name == name }
     }
 
     @Override
     SimplifiedProvisioningList createSimplifiedProvisioningList(
-            String name, long profileId, List<SimplifiedInstallableUnit> provisioningList) {
-        if(getSimplifiedProvisioningList(name, profileId) != null)
+            String name, List<SimplifiedInstallableUnit> provisioningList) {
+        if(getSimplifiedProvisioningList(name) != null)
             throw new ExistingResourceException(
                     "Provisioning list with name $name for profile $profileId already exists")
 
         def newProvisioningList = new SimplifiedProvisioningList(
-                id: System.currentTimeMillis(), name: name, profileId: profileId, installableUnits: provisioningList)
+                id: System.currentTimeMillis(), name: name, installableUnits: provisioningList)
         simplifiedProvisioningLists << newProvisioningList
         storeCache()
         newProvisioningList
@@ -97,7 +97,7 @@ class ProvisioningListCacheImpl implements ProvisioiningListsCache{
     }
 
     @Override
-    def removeSimplifiedProvisioningList(Object provisioningListId) {
+    def removeSimplifiedProvisioningList(long provisioningListId) {
         simplifiedProvisioningLists -= getSimplifiedProvisioningList(provisioningListId)
         storeCache()
     }

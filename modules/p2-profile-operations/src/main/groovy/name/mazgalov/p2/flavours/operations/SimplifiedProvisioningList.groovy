@@ -6,6 +6,5 @@ package name.mazgalov.p2.flavours.operations
 class SimplifiedProvisioningList {
     long id
     String name
-    long profileId
     List<SimplifiedInstallableUnit> installableUnits
 }

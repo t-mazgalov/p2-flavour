@@ -14,5 +14,8 @@ interface MetadataRepositoryOperator {
     List<URI> getKnownRepositories(IProvisioningAgent agent)
     boolean removeRepository(URI repositoryLocation, IProvisioningAgent agent)
     Collection<IInstallableUnit> getInstallableUnits(IMetadataRepository repository)
-    Collection<IInstallableUnit> getInstallableUnits(IMetadataRepository repository, Collection<String> installableUnitIds)
+//    Collection<IInstallableUnit> getInstallableUnits(
+//            IMetadataRepository repository, Collection<String> installableUnitIds)
+    Collection<IInstallableUnit> getInstallableUnits(
+            IMetadataRepository repository, Collection<SimplifiedInstallableUnit> installableUnitIds)
 }

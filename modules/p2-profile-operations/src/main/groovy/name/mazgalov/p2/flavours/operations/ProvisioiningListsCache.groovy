@@ -10,18 +10,18 @@ interface ProvisioiningListsCache {
     static final String CACHE_FILE = 'provisioning.lists.cache'
 
     List<SimplifiedProvisioningList> getSimplifiedProvisioningLists()
-    SimplifiedProvisioningList getSimplifiedProvisioningList(provisioningListId)
-    SimplifiedProvisioningList getSimplifiedProvisioningList(name, profileId)
+    SimplifiedProvisioningList getSimplifiedProvisioningList(long provisioningListId)
+    SimplifiedProvisioningList getSimplifiedProvisioningList(String name)
 
     SimplifiedProvisioningList createSimplifiedProvisioningList(
-            String name, long profileId, List<SimplifiedInstallableUnit> provisioningList)
+            String name, List<SimplifiedInstallableUnit> provisioningList)
 
     SimplifiedProvisioningList addSimplifiedInstallableUnits(
             long provisioningListId, List<SimplifiedInstallableUnit> installableUnits)
     SimplifiedProvisioningList removeSimplifiedInstallableUnits(
             long provisioningListId, List<SimplifiedInstallableUnit> installableUnits)
 
-    def removeSimplifiedProvisioningList(provisioningListId)
+    def removeSimplifiedProvisioningList(long provisioningListId)
 
     List<InstallableUnit> resolveProvisioningListInstallableUnits(
             List<SimplifiedInstallableUnit> simplifiedInstallableUnitList)

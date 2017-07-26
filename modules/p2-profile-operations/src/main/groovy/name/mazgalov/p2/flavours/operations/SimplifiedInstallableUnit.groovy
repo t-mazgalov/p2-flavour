@@ -7,6 +7,7 @@ package name.mazgalov.p2.flavours.operations
 class SimplifiedInstallableUnit {
     String id
     String type
+    String repository
     int major
     int minor
     int micro
