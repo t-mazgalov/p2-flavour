@@ -1,6 +1,8 @@
 angular
     .module('AppP2F')
     .controller('ProvisioningController', function($scope, $http) {
+        $scope.disabledProgressProvision = true;
+
         $scope.loadProvLists = function() {
             return $http
                 .get("/rs/provisioning-lists/list")
@@ -19,6 +21,8 @@ angular
 
 
         $scope.provisionProvList = function() {
+            $scope.disabledProgressProvision = false;
+
             var params = {
                 'profile': $scope.selectedProfile,
                 'simplifiedProvisioningList': $scope.selectedProvList
@@ -27,7 +31,8 @@ angular
             $http
                 .post("/rs/provisioning-lists/provision", params)
                 .then(function(response) {
-                    console.log(response.data);
+                    $scope.provisioningOutput = response.data;
+                    $scope.disabledProgressProvision = true;
                 });
         }
     });

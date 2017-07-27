@@ -11,24 +11,28 @@
                     <span class="md-subhead">List of available P2 provisioning lists</span>
                   </md-card-header-text>
                 </md-card-header>
-                <md-content layout-padding>
-                    <md-select
-                        placeholder="Select P2 provisioning lists"
-                        ng-model="selectedProvList"
-                        md-on-open="loadProvLists()">
-                        <md-option ng-value="provList" ng-repeat="provList in provLists">
-                            {{provList.name}}
-                        </md-option>
-                    </md-select>
-                    <md-select
-                        placeholder="Select P2 profile"
-                        ng-model="selectedProfile"
-                        md-on-open="loadProfiles()">
-                        <md-option ng-value="profile" ng-repeat="profile in profiles">
-                            {{profile.name}}:{{profile.location}}
-                        </md-option>
-                    </md-select>
-                    <md-button ng-click="provisionProvList()" class="md-raised md-primary">Provision</md-button>
+                <md-content>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressProvision">
+                    </md-progress-linear>
+                    <div layout-padding>
+                        <md-select
+                            placeholder="Select P2 provisioning lists"
+                            ng-model="selectedProvList"
+                            md-on-open="loadProvLists()">
+                            <md-option ng-value="provList" ng-repeat="provList in provLists">
+                                {{provList.name}}
+                            </md-option>
+                        </md-select>
+                        <md-select
+                            placeholder="Select P2 profile"
+                            ng-model="selectedProfile"
+                            md-on-open="loadProfiles()">
+                            <md-option ng-value="profile" ng-repeat="profile in profiles">
+                                {{profile.name}}:{{profile.location}}
+                            </md-option>
+                        </md-select>
+                        <md-button ng-click="provisionProvList()" class="md-raised md-primary">Provision</md-button>
+                    </div>
                 </md-content>
             </md-card>
         </div>
@@ -62,5 +66,28 @@
                 </md-content>
             </md-card>
         </div>
+    </md-content>
+    <md-content class="md-padding" layout-xs="column" layout="row">
+        <md-card ng-show="provisioningOutput" flex-xs flex-gt-xs="100">
+            <md-toolbar class="{{ provisioningOutput.children ? 'md-warn' : 'md-primary' }}">
+                <div class="md-toolbar-tools">
+                    <h2>Provisioning output</h2>
+                </div>
+            </md-toolbar>
+            <md-content flex layout-padding>
+                <script type="text/ng-template" id="prov-status.html">
+                    <div>
+                        {{innerStatus.message}} <small class="md-caption">({{innerStatus.pluginId}}), code: {{innerStatus.code}}</small>
+                    </div>
+                    <div ng-repeat="innerStatus in innerStatus.children" ng-include="'prov-status.html'">
+                    </div>
+                </script>
+                <p>
+                    {{provisioningOutput.message}} <small class="md-caption">({{provisioningOutput.pluginId}}), code: {{provisioningOutput.code}}</small>
+                </p>
+                <div ng-repeat="innerStatus in provisioningOutput.children" ng-include="'prov-status.html'">
+                </div>
+            </md-content>
+        </md-card>
     </md-content>
 </div>
