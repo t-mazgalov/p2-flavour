@@ -12,8 +12,25 @@
                   </md-card-header-text>
                 </md-card-header>
                 <md-content>
-                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressListRepos"></md-progress-linear>
-                    <md-list class="md-dense" ng-repeat="repo in repos" flex>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressListRepos">
+                    </md-progress-linear>
+                    <md-input-container layout="row" layout-align="center center" >
+                        <label>Filter P2 profile repositories</label>
+                        <md-select
+                            ng-model="filerProfileRepos"
+                            ng-init="checkCurrentProfile()"
+                            md-on-open="loadProfiles()"
+                            class="md-block" flex="95">
+                            <md-option ng-value="profile.name" ng-repeat="profile in profiles">
+                                {{profile.name}}:{{profile.location}}
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-divider></md-divider>
+                    <md-list
+                        class="md-dense"
+                        ng-repeat="repo in repos | filter: filterRepos"
+                        flex>
                         <md-list-item class="md-3-line" ng-repeat="metadataRepository in repo.metadataRepositories">
                            <img ng-src="img/icons/metadata.png" class="md-avatar" alt="Metadata Repository" />
                            <div class="md-list-item-text">
@@ -88,9 +105,18 @@
                     </md-card-header-text>
                 </md-card-header>
                 <md-content>
-                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressListRepo"></md-progress-linear>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressListRepo">
+                    </md-progress-linear>
                     <md-list class="md-dense" flex>
-                        <md-list-item class="md-3-line" ng-repeat="iu in ius">
+                        <md-input-container class="md-block card-filter" flex="95">
+                            <label>Filter units</label>
+                            <md-icon class="material-icons">search</md-icon>
+                            <input ng-model="filterRepoUnits">
+                        </md-input-container>
+                        <md-divider></md-divider>
+                        <md-list-item class="md-3-line"
+                            ng-repeat="iu in ius"
+                            ng-show="([iu] | filter:{'id':filterRepoUnits}).length > 0">
                             <img
                                 ng-src="img/icons/{{iu.iuType}}.png"
                                 class="md-avatar"
@@ -141,9 +167,17 @@
                     </md-card-header-text>
                 </md-card-header>
                 <md-content>
-                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressManageProvList"></md-progress-linear>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressManageProvList">
+                    </md-progress-linear>
                     <md-list class="md-dense" flex>
-                        <md-list-item class="md-3-line" ng-repeat="iu in currentProvList.installableUnits">
+                        <md-input-container class="md-block card-filter" flex="95">
+                            <label>Filter units</label>
+                            <md-icon class="material-icons">search</md-icon>
+                            <input ng-model="filterProvListUnits">
+                        </md-input-container>
+                        <md-divider></md-divider>
+                        <md-list-item class="md-3-line" ng-repeat="iu in currentProvList.installableUnits"
+                            ng-show="([iu] | filter:{'id':filterProvListUnits}).length > 0">
                             <img
                                 ng-src="img/icons/{{iu.type}}.png"
                                 class="md-avatar"

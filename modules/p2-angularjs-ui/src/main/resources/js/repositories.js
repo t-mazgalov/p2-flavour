@@ -1,6 +1,25 @@
 angular
     .module('AppP2F')
     .controller('RepositoriesController', function($scope, $http, $mdDialog) {
+        $scope.checkCurrentProfile = function () {
+            return $http
+                .get("/rs/profiles/current")
+                .then(function(response) {
+                    $scope.currentProfile = response.data;
+                });
+        }
+
+        $scope.filterRepos = function (repo) {
+            while($scope.currentProfile == null) {
+                // Waiting currentProfile
+            }
+
+            if($scope.filerProfileRepos == null) {
+                return repo.profile.name === $scope.currentProfile.name;
+            }
+            return repo.profile.name === $scope.filerProfileRepos;
+        };
+
         function getRepos() {
             $scope.disabledProgressListRepos = false;
 
@@ -25,8 +44,8 @@ angular
             $scope.disabledProgressManageProvList = true;
         }
 
-        getRepos() // Initial call
-        getProvisioningLists() // Initial call
+        getRepos(); // Initial call
+        getProvisioningLists(); // Initial call
 
         $scope.listMetadataRepo = function(profileId, repoLocation) {
             $scope.loadedRepoCard = true;
