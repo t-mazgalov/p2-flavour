@@ -12,7 +12,9 @@
     height: 200px;
 }
 
-
+.card-filter {
+    margin: 5px auto 0 auto;
+}
 
 
 .metadata {
