@@ -10,9 +10,6 @@ angular
         }
 
         $scope.filterRepos = function (repo) {
-            while($scope.currentProfile == null) {
-                // Waiting currentProfile
-            }
 
             if($scope.filerProfileRepos == null) {
                 return repo.profile.name === $scope.currentProfile.name;
