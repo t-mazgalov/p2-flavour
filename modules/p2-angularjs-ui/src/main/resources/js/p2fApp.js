@@ -1,5 +1,5 @@
 angular
-    .module('AppP2F', ['ngMaterial', 'ngRoute', 'ngAnimate'])
+    .module('AppP2F', ['ngMaterial', 'ngRoute', 'ngAnimate', 'ngVis'])
     .config(function($mdThemingProvider) {
       $mdThemingProvider
           .theme('default')
@@ -16,6 +16,9 @@ angular
         })
         .when('/repositories', {
             templateUrl: 'jsp/repositories.jsp'
+        })
+        .when('/provisioning-lists', {
+            templateUrl: 'jsp/provisioning-lists.jsp'
         })
         .when('/provision', {
             templateUrl: 'jsp/provisioning.jsp'
