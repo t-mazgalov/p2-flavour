@@ -30,6 +30,40 @@ class ProvisioningListCacheImpl implements ProvisioiningListsCache{
         provisioningListsCachePath.toFile().text = new Gson().toJson(simplifiedProvisioningLists)
     }
 
+    protected boolean checkCyclicDependencies(SimplifiedProvisioningList fromList, SimplifiedProvisioningList toList) {
+        def foundIds = []
+        if(findDependencyIds(foundIds, toList))
+            return true
+        if(foundIds.contains(fromList.id)) {
+            return true
+        }
+        return false
+    }
+
+    protected boolean findDependencyIds(List<Long> collector, SimplifiedProvisioningList toList) {
+        if(toList.extendedListIds.contains(toList.id))
+            return true
+        toList.extendedListIds.each {
+            if(it == -1)
+                return
+            if(collector.contains(it))
+                return
+            collector << it
+            findDependencyIds(collector, getSimplifiedProvisioningList(it))
+        }
+        return false
+    }
+
+    protected crateSystemProvisioningList() {
+        def newProvisioningList = new SimplifiedProvisioningList(
+                id: 0L,
+                name: 'system',
+                installableUnits: [],
+                extendedListIds: [-1L])
+        simplifiedProvisioningLists << newProvisioningList
+        storeCache()
+    }
+
     @Activate
     def activate(BundleContext bundleContext,
                  Map<String,Object> config) {
@@ -37,15 +71,18 @@ class ProvisioningListCacheImpl implements ProvisioiningListsCache{
         provisioningListsCachePath = configurationArea.resolve(CACHE_FILE)
 
         def provisioningListsCacheFile = provisioningListsCachePath.toFile()
-        if(provisioningListsCacheFile.createNewFile() || provisioningListsCacheFile.text == '')
+        if(provisioningListsCacheFile.createNewFile() || provisioningListsCacheFile.text == '') {
+            crateSystemProvisioningList()
             return // Nothing to parse if the file is new (empty)
+        }
 
         JsonSlurper slurper = new JsonSlurper()
         slurper.parse(provisioningListsCacheFile).each {
             simplifiedProvisioningLists << new SimplifiedProvisioningList(
                     id: it.id,
                     name: it.name,
-                    installableUnits: it.installableUnits)
+                    installableUnits: it.installableUnits,
+                    extendedListIds: it.extendedListIds.collect{new Long(it)})
         }
     }
 
@@ -67,12 +104,21 @@ class ProvisioningListCacheImpl implements ProvisioiningListsCache{
     @Override
     SimplifiedProvisioningList createSimplifiedProvisioningList(
             String name, List<SimplifiedInstallableUnit> provisioningList) {
+        createSimplifiedProvisioningList(name, provisioningList, 0L)
+    }
+
+    @Override
+    SimplifiedProvisioningList createSimplifiedProvisioningList(
+            String name, List<SimplifiedInstallableUnit> installableUnits, long extendedListId) {
         if(getSimplifiedProvisioningList(name) != null)
             throw new ExistingResourceException(
-                    "Provisioning list with name $name for profile $profileId already exists")
+                    "Provisioning list with name $name already exists")
 
         def newProvisioningList = new SimplifiedProvisioningList(
-                id: System.currentTimeMillis(), name: name, installableUnits: provisioningList)
+                id: System.currentTimeMillis(),
+                name: name,
+                installableUnits: installableUnits,
+                extendedListIds: [extendedListId])
         simplifiedProvisioningLists << newProvisioningList
         storeCache()
         newProvisioningList
@@ -94,6 +140,28 @@ class ProvisioningListCacheImpl implements ProvisioiningListsCache{
         simplifiedProvisioningList.installableUnits -= installableUnits
         storeCache()
         simplifiedProvisioningList
+    }
+
+    @Override
+    def extendList(long fromListId, long toListId) {
+        def fromList = getSimplifiedProvisioningList(fromListId)
+        def toList = getSimplifiedProvisioningList(toListId)
+        if(fromList == null || toList == null)
+            return
+        if(checkCyclicDependencies(fromList, toList))
+            return
+        fromList.extendedListIds << toList.id
+        storeCache()
+    }
+
+    @Override
+    def shrinkList(long fromListId, long toListId) {
+        def fromList = getSimplifiedProvisioningList(fromListId)
+        def toList = getSimplifiedProvisioningList(toListId)
+        if(fromList == null || toList == null)
+            return
+        fromList.extendedListIds -= toList.id
+        storeCache()
     }
 
     @Override

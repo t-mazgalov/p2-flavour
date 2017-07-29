@@ -15,12 +15,16 @@ interface ProvisioiningListsCache {
 
     SimplifiedProvisioningList createSimplifiedProvisioningList(
             String name, List<SimplifiedInstallableUnit> provisioningList)
+    SimplifiedProvisioningList createSimplifiedProvisioningList(
+            String name, List<SimplifiedInstallableUnit> provisioningList, long extendedListId)
 
     SimplifiedProvisioningList addSimplifiedInstallableUnits(
             long provisioningListId, List<SimplifiedInstallableUnit> installableUnits)
     SimplifiedProvisioningList removeSimplifiedInstallableUnits(
             long provisioningListId, List<SimplifiedInstallableUnit> installableUnits)
 
+    def extendList(long fromListId, long toListId)
+    def shrinkList(long fromListId, long toListId)
     def removeSimplifiedProvisioningList(long provisioningListId)
 
     List<InstallableUnit> resolveProvisioningListInstallableUnits(

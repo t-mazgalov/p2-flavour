@@ -7,4 +7,5 @@ class SimplifiedProvisioningList {
     long id
     String name
     List<SimplifiedInstallableUnit> installableUnits
+    List<Long> extendedListIds
 }
