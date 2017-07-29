@@ -109,6 +109,20 @@ class ProvisioningListServices {
         new Gson().toJson(frameworkOperator.installProfile(provisioningOptions))
     }
 
+    @PUT
+    @Path("extend/{fromListId}/{toListId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    def extendProvisioningList(@PathParam("fromListId") long fromListId, @PathParam("toListId") long toListId) {
+        provisioningListsCache.extendList(fromListId, toListId)
+    }
+
+    @PUT
+    @Path("shrink/{fromListId}/{toListId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    def shrinkProvisioningList(@PathParam("fromListId") long fromListId, @PathParam("toListId") long toListId) {
+        provisioningListsCache.shrinkList(fromListId, toListId)
+    }
+
     @DELETE
     @Path("remove/{id}")
     def removeRepository(@PathParam("id") long id) {
