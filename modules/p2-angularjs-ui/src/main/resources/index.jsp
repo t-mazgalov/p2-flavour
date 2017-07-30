@@ -32,7 +32,7 @@
             </md-button>
 
             <div layout="row" layout-align="center center">
-                <h3> <span>P2 Flavours | {{$route.current.params.name}}</span> </h3>
+                <img ng-src="img/logo.png"/>
             </div>
         </md-toolbar>
 
