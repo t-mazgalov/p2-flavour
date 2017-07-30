@@ -25,7 +25,7 @@
                             ng-repeat="provList in provLists"
                             ng-show="([provList] | filter:{'name':filterProvLists}).length > 0">
                             <img
-                                ng-src="img/icons/profile.png"
+                                ng-src="img/icons/provisioning-list.png"
                                 class="md-avatar"
                                 alt="" />
                             <div class="md-list-item-text">
