@@ -2,14 +2,14 @@ package name.mazgalov.p2.flavours.controller
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import name.mazgalov.p2.flavours.controller.internal.OsgiVersionSerializer
-import name.mazgalov.p2.flavours.controller.internal.RepositoryRegistration
+import name.mazgalov.p2.flavours.controller.internal.*
 import name.mazgalov.p2.flavours.operations.ArtifactsRepositoryOperator
-import name.mazgalov.p2.flavours.operations.FrameworkOperator
 import name.mazgalov.p2.flavours.operations.MetadataRepositoryOperator
 import name.mazgalov.p2.flavours.operations.Profile
 import name.mazgalov.p2.flavours.operations.ProfilesCache
 import org.eclipse.equinox.internal.p2.metadata.OSGiVersion
+import org.eclipse.equinox.p2.metadata.IInstallableUnit
+import org.eclipse.equinox.p2.metadata.IRequirement
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository
 import org.osgi.service.component.annotations.Component
@@ -19,7 +19,6 @@ import org.osgi.service.component.annotations.ReferencePolicy
 
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
-import java.nio.file.Paths
 
 /**
  * Created on 05-Jul-17.
@@ -62,7 +61,7 @@ class RepositoryServices {
         // Jankson expect all used classes to be serializable.
         // org.eclipse.equinox.internal.p2.metadata.VersionFormat is not
         GsonBuilder gsonBuilder = new GsonBuilder()
-        gsonBuilder.registerTypeAdapter(OSGiVersion.class, new OsgiVersionSerializer())
+        gsonBuilder.registerTypeAdapter(OSGiVersion.class, new BasicVersionSerializer())
         gsonBuilder.create().toJson(ius)
     }
 
@@ -80,6 +79,47 @@ class RepositoryServices {
         // Jankson expect all used classes to be serializable.
         // org.eclipse.equinox.internal.p2.metadata.VersionFormat is not
         new Gson().toJson(artifacts)
+    }
+
+    @GET
+    @Path("graph/{profileId}/metadata/{location: .*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    def iusGraphData(@PathParam("profileId") long profileId, @PathParam("location") String location) {
+        IMetadataRepository metadataRepository =
+                metadataRepositoryOperator.refreshRepository(
+                        new URI(location),
+                        profilesCache.getProfile(profileId).agent)
+
+        def ius = metadataRepositoryOperator.getInstallableUnits(metadataRepository)
+
+        def graphIus = []
+        def graphRequirements = []
+
+        ius.each { IInstallableUnit iu ->
+            def graphIu = iu.providedCapabilities.find {
+                it.namespace == 'osgi.bundle' || it.name.endsWith('feature.group')
+            }
+            if(graphIu == null)
+                return
+
+            def iuIdVersion = "$iu.id:$iu.version.original"
+            graphIus << new GraphInstallableUnit(id: iuIdVersion, label: iuIdVersion)
+            iu.requirements.each { IRequirement requirement ->
+                ius.findAll {
+                    it.satisfies(requirement)
+                }.each { IInstallableUnit foundIu ->
+                    graphRequirements << new GraphInstallableUnitRequirement(
+                            from: iuIdVersion,
+                            to: "$foundIu.id:$foundIu.version.original",
+                            arrows: 'to')
+                }
+            }
+        }
+
+        new Gson().toJson(
+                new GraphInstallableUnitData(
+                        graphInstallableUnits: graphIus,
+                        graphInstallableUnitRequirements: graphRequirements))
     }
 
     @POST
