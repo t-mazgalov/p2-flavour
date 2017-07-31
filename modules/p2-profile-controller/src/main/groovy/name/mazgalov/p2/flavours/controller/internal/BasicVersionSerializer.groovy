@@ -4,6 +4,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import org.eclipse.equinox.internal.p2.metadata.BasicVersion
 import org.eclipse.equinox.internal.p2.metadata.OSGiVersion
 
 import java.lang.reflect.Type
@@ -12,15 +13,15 @@ import java.lang.reflect.Type
  * Created on 25-Jul-17.
  * @author <a href="mailto:todor@mazgalov.name">Todor Mazgalov</a> 
  */
-class OsgiVersionSerializer implements JsonSerializer {
+class BasicVersionSerializer implements JsonSerializer {
     @Override
     JsonElement serialize(Object src, Type typeOfSrc, JsonSerializationContext context) {
-        def osgiVersion = src as OSGiVersion
+        def basicVersion = src as BasicVersion
         JsonObject versionObject = new JsonObject()
-        versionObject.addProperty('major', osgiVersion.major)
-        versionObject.addProperty('minor', osgiVersion.minor)
-        versionObject.addProperty('micro', osgiVersion.micro)
-        versionObject.addProperty('qualifier', osgiVersion.qualifier)
+        versionObject.addProperty('major', basicVersion.major)
+        versionObject.addProperty('minor', basicVersion.minor)
+        versionObject.addProperty('micro', basicVersion.micro)
+        versionObject.addProperty('qualifier', basicVersion.qualifier)
 
         versionObject
     }
