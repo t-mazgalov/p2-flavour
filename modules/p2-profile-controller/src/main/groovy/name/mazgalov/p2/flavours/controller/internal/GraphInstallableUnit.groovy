@@ -7,4 +7,6 @@ package name.mazgalov.p2.flavours.controller.internal
 class GraphInstallableUnit {
     String id
     String label
+    String color
+    String shape
 }

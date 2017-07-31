@@ -95,15 +95,27 @@ class RepositoryServices {
         def graphIus = []
         def graphRequirements = []
 
+        // TODO move to constants
+        // TODO find scalable solution. Display of large repositories is too slow, e.g. eclipse p2 repo
+        // TODO consider extraction of the colors and shapes in the UI bundle
         ius.each { IInstallableUnit iu ->
-            def graphIu = iu.providedCapabilities.find {
+            def graphIuCapability = iu.providedCapabilities.find {
                 it.namespace == 'osgi.bundle' || it.name.endsWith('feature.group')
             }
-            if(graphIu == null)
+            if(graphIuCapability == null)
                 return
 
+            def iuShape = 'triangle' // Default shape
+            def iuColor = '#555555' // Deafult color
+            if(graphIuCapability.namespace == 'osgi.bundle') {
+                iuShape = 'dot'
+                iuColor = '#009688'
+            } else if(graphIuCapability.name.endsWith('feature.group')) {
+                iuShape = 'square'
+                iuColor = '#448aff'
+            }
             def iuIdVersion = "$iu.id:$iu.version.original"
-            graphIus << new GraphInstallableUnit(id: iuIdVersion, label: iuIdVersion)
+            graphIus << new GraphInstallableUnit(id: iuIdVersion, label: iuIdVersion, shape: iuShape, color: iuColor)
             iu.requirements.each { IRequirement requirement ->
                 ius.findAll {
                     it.satisfies(requirement)
