@@ -160,6 +160,22 @@
             </md-card>
         </div>
         <div flex-xs flex-gt-xs="50" layout="column">
+            <md-card ng-show="iusGraphData">
+                <md-card-header>
+                  <md-card-avatar>
+                    <md-icon class="material-icons">show_chart</md-icon>
+                  </md-card-avatar>
+                  <md-card-header-text>
+                    <span class="md-title">Installable units dependencies graph</span>
+                    <span class="md-subhead">Installable units requirements and capabilities</span>
+                  </md-card-header-text>
+                </md-card-header>
+                <md-content>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressIusGraph">
+                    </md-progress-linear>
+                    <vis-network data="iusGraphData" options="iusGraphOptions"></vis-network>
+                </md-content>
+            </md-card>
             <md-card ng-show="currentProvList">
                 <md-card-header>
                     <md-card-avatar>
@@ -198,26 +214,6 @@
                             </md-icon>
                         </md-list-item>
                     </md-list>
-                </md-content>
-            </md-card>
-        </div>
-    </md-content>
-    <md-content class="md-padding" layout-xs="column" layout="row">
-        <div flex="100" layout="column">
-            <md-card ng-show="iusGraphData">
-                <md-card-header>
-                  <md-card-avatar>
-                    <md-icon class="material-icons">show_chart</md-icon>
-                  </md-card-avatar>
-                  <md-card-header-text>
-                    <span class="md-title">Installable units dependencies graph</span>
-                    <span class="md-subhead">Installable units requirements and capabilities</span>
-                  </md-card-header-text>
-                </md-card-header>
-                <md-content>
-                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressIusGraph">
-                    </md-progress-linear>
-                    <vis-network data="iusGraphData" options="iusGraphOptions"></vis-network>
                 </md-content>
             </md-card>
         </div>
