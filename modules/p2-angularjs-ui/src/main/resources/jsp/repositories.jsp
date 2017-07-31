@@ -39,6 +39,10 @@
                                <p>Profile ID: {{repo.profile.id}}</p>
                            </div>
                            <md-icon class="material-icons"
+                             ng-click="loadIusGraph(repo.profile.id, metadataRepository)">
+                             show_chart
+                           </md-icon>
+                           <md-icon class="material-icons"
                                ng-click="listMetadataRepo(repo.profile.id, metadataRepository)">
                                find_in_page
                            </md-icon>
@@ -194,6 +198,26 @@
                             </md-icon>
                         </md-list-item>
                     </md-list>
+                </md-content>
+            </md-card>
+        </div>
+    </md-content>
+    <md-content class="md-padding" layout-xs="column" layout="row">
+        <div flex="100" layout="column">
+            <md-card ng-show="iusGraphData">
+                <md-card-header>
+                  <md-card-avatar>
+                    <md-icon class="material-icons">show_chart</md-icon>
+                  </md-card-avatar>
+                  <md-card-header-text>
+                    <span class="md-title">Installable units dependencies graph</span>
+                    <span class="md-subhead">Installable units requirements and capabilities</span>
+                  </md-card-header-text>
+                </md-card-header>
+                <md-content>
+                    <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressIusGraph">
+                    </md-progress-linear>
+                    <vis-network data="iusGraphData" options="iusGraphOptions"></vis-network>
                 </md-content>
             </md-card>
         </div>

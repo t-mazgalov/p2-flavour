@@ -1,6 +1,18 @@
 angular
     .module('AppP2F')
-    .controller('RepositoriesController', function($scope, $http, $mdDialog) {
+    .controller('RepositoriesController', function($scope, $http, $mdDialog, $mdToast) {
+        $scope.iusGraphOptions = {
+            autoResize: true,
+            height: '500',
+            width: '100%',
+            nodes : {
+                font:{color:'#666666'},
+                "color": "#009688",
+                "shape": "dot",
+                "shadow": false
+            }
+        };
+
         $scope.checkCurrentProfile = function () {
             return $http
                 .get("/rs/profiles/current")
@@ -70,6 +82,7 @@ angular
                     $scope.listedRepoLocation = repoLocation;
                     getRepos(); // Update repos
                     $scope.disabledProgressListRepo = true;
+                    console.log(JSON.stringify(responseData, null, 2));
                 });
         }
 
@@ -238,11 +251,34 @@ angular
                                 .get("/rs/provisioning-lists/" + response.data.id)
                                 .then(function(response) {
                                     setCurrentProvList(response.data);
-                                })
+                                });
                         });
                 }, function() {
 
                 }
             );
+        };
+
+        $scope.loadIusGraph = function(profileId, repoLocation) {
+            $scope.disabledProgressIusGraph = false;
+
+            return $http
+                .get("/rs/repos/graph/" + profileId + "/metadata/" + repoLocation)
+                .then(function(response) {
+                    var responseData = response.data;
+
+                    var iusGraphDataNodes = responseData.graphInstallableUnits;
+                    var iusGraphDataEdges = responseData.graphInstallableUnitRequirements;
+
+                    var provisioningListsDacData = {
+                        "nodes": iusGraphDataNodes,
+                        "edges": iusGraphDataEdges
+                    }
+
+                    console.log(provisioningListsDacData);
+                    $scope.iusGraphData = provisioningListsDacData;
+
+                    $scope.disabledProgressIusGraph = true;
+                });
         };
     });
