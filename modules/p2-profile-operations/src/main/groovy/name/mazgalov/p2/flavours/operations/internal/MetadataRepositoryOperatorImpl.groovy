@@ -3,8 +3,12 @@ package name.mazgalov.p2.flavours.operations.internal
 import name.mazgalov.p2.flavours.operations.MetadataRepositoryOperator
 import name.mazgalov.p2.flavours.operations.SimplifiedInstallableUnit
 import org.eclipse.core.runtime.NullProgressMonitor
+import org.eclipse.equinox.internal.p2.metadata.BasicVersion
+import org.eclipse.equinox.internal.p2.metadata.OSGiVersion
 import org.eclipse.equinox.p2.core.IProvisioningAgent
 import org.eclipse.equinox.p2.metadata.IInstallableUnit
+import org.eclipse.equinox.p2.metadata.Version
+import org.eclipse.equinox.p2.metadata.VersionRange
 import org.eclipse.equinox.p2.metadata.expression.SimplePattern
 import org.eclipse.equinox.p2.query.QueryUtil
 import org.eclipse.equinox.p2.repository.IRepositoryManager
@@ -51,7 +55,16 @@ class MetadataRepositoryOperatorImpl implements MetadataRepositoryOperator {
         repository.query(QueryUtil.createIUAnyQuery(), new NullProgressMonitor()).toUnmodifiableSet()
     }
 
-    /*@Override
+    @Override
+    IInstallableUnit getInstallableUnit(IMetadataRepository repository, String id, String version) {
+        // Bug, cannot convert P2 cannot convert GString to String
+        version = version.endsWith('.') ? version[0..-2] : version
+        def range = "[$version,$version]".toString()
+        repository.query(
+                QueryUtil.createMatchQuery('this.id == $0 && this.version ~= range($1)', id, range),
+                new NullProgressMonitor()).toSet()[0]
+    }
+/*@Override
     Collection<IInstallableUnit> getInstallableUnits(
             IMetadataRepository repository, Collection<String> installableUnitIds) {
         repository.query(
