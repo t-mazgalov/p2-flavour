@@ -132,6 +132,10 @@
                                 </p>
                                 <p>Unit type: {{iu.iuType}}</p>
                             </div>
+                            <md-icon class="material-icons"
+                                 ng-click="loadIuGraph(selectedProfileId, listedRepoLocation, iu.id, iu.version)">
+                                 show_chart
+                               </md-icon>
                             <md-menu class="md-secondary" ng-if="iu.iuType !== 'artifact-key'">
                                 <md-button class="md-icon-button">
                                     <md-icon class="material-icons">add</md-icon>
@@ -173,7 +177,7 @@
                 <md-content>
                     <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressIusGraph">
                     </md-progress-linear>
-                    <vis-network data="iusGraphData" options="iusGraphOptions"></vis-network>
+                    <vis-network data="iusGraphData" options="options" events="iusGraphEvents"></vis-network>
                 </md-content>
             </md-card>
             <md-card ng-show="currentProvList">

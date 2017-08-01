@@ -1,16 +1,38 @@
 angular
     .module('AppP2F')
     .controller('RepositoriesController', function($scope, $http, $mdDialog, $mdToast) {
-        $scope.iusGraphOptions = {
+        $scope.iusGraphOptionsStabilized = function() {
+            console.log("iusGraphOptionsStabilizationIterationsDone done");
+            $scope.options.physics = false
+        }
+        $scope.options = {
             autoResize: true,
             height: '500',
             width: '100%',
             nodes : {
                 font:{color:'#666666'},
-                "color": "#009688",
-                "shape": "dot",
                 "shadow": false
+            },
+            physics: {
+                forceAtlas2Based: {
+                    gravitationalConstant: -26,
+                    centralGravity: 0.005,
+                    springLength: 230,
+                    springConstant: 0.18,
+                    avoidOverlap: 1.5
+                },
+                maxVelocity: 146,
+                solver: 'forceAtlas2Based',
+                timestep: 0.35,
+                stabilization: {
+                    enabled: true,
+                    iterations: 1000,
+                    updateInterval: 25
+                }
             }
+        };
+        $scope.iusGraphEvents = {
+            stabilizationIterationsDone: $scope.iusGraphOptionsStabilized
         };
 
         $scope.checkCurrentProfile = function () {
@@ -80,9 +102,9 @@ angular
                     }
                     $scope.ius = responseData;
                     $scope.listedRepoLocation = repoLocation;
+                    $scope.selectedProfileId = profileId;
                     getRepos(); // Update repos
                     $scope.disabledProgressListRepo = true;
-                    console.log(JSON.stringify(responseData, null, 2));
                 });
         }
 
@@ -264,6 +286,30 @@ angular
 
             return $http
                 .get("/rs/repos/graph/" + profileId + "/metadata/" + repoLocation)
+                .then(function(response) {
+                    var responseData = response.data;
+
+                    var iusGraphDataNodes = responseData.graphInstallableUnits;
+                    var iusGraphDataEdges = responseData.graphInstallableUnitRequirements;
+
+                    var provisioningListsDacData = {
+                        "nodes": iusGraphDataNodes,
+                        "edges": iusGraphDataEdges
+                    }
+
+                    console.log(provisioningListsDacData);
+                    $scope.iusGraphData = provisioningListsDacData;
+
+                    $scope.disabledProgressIusGraph = true;
+                });
+        };
+
+        $scope.loadIuGraph = function(profileId, repoLocation, iuId, iuVersion) {
+            $scope.disabledProgressIusGraph = false;
+
+            var version = iuVersion.major + "." + iuVersion.minor + "." + iuVersion.micro + "." + iuVersion.qualifier
+            return $http
+                .get("/rs/repos/graph/" + profileId + "/iu/" + iuId + "/" + version + "/" + repoLocation)
                 .then(function(response) {
                     var responseData = response.data;
 
