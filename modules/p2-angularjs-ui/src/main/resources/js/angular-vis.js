@@ -140,7 +140,12 @@ angular.module('ngVis', [])
                     // Attach an event handler if defined
                     angular.forEach(scope.events, function (callback, event) {
                         if (networkEvents.indexOf(String(event)) >= 0) {
-                            network.on(event, callback);
+                            var resetOptionsAfterCallback = function() {
+                                callback();
+                                network.setOptions(scope.options);
+                            }
+                            network.on(event, resetOptionsAfterCallback);
+
                         }
                     });
 
