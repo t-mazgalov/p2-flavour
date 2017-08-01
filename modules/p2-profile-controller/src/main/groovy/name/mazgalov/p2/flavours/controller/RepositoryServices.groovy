@@ -134,6 +134,89 @@ class RepositoryServices {
                         graphInstallableUnitRequirements: graphRequirements))
     }
 
+    @GET
+    @Path("graph/{profileId}/iu/{id}/{version}/{location: .*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    def iuGraphData(
+            @PathParam("profileId") long profileId,
+            @PathParam("id") String id,
+            @PathParam("version") String version,
+            @PathParam("location") String location) {
+        IMetadataRepository metadataRepository =
+                metadataRepositoryOperator.refreshRepository(
+                        new URI(location),
+                        profilesCache.getProfile(profileId).agent)
+
+        def ius = metadataRepositoryOperator.getInstallableUnits(metadataRepository)
+        def iu = metadataRepositoryOperator.getInstallableUnit(metadataRepository, id, version)
+
+        def graphIus = []
+        def graphRequirements = []
+
+        // TODO move to constants
+        // TODO find scalable solution. Display of large repositories is too slow, e.g. eclipse p2 repo
+        // TODO consider extraction of the colors and shapes in the UI bundle
+        def graphIuCapability = iu.providedCapabilities.find {
+            it.namespace == 'osgi.bundle' || it.name.endsWith('feature.group')
+        }
+
+        def iuShape = 'triangle' // Default shape
+        def iuColor = '#555555' // Deafult color
+        if(graphIuCapability != null) {
+            if (graphIuCapability.namespace == 'osgi.bundle') {
+                iuShape = 'dot'
+                iuColor = '#009688'
+            } else if (graphIuCapability.name.endsWith('feature.group')) {
+                iuShape = 'square'
+                iuColor = '#448aff'
+            }
+        }
+        def iuIdVersion = "$iu.id:$iu.version.original"
+
+
+        generateDepthIusGraph(ius,iu,graphIus,graphRequirements)
+
+
+        new Gson().toJson(
+                new GraphInstallableUnitData(
+                        graphInstallableUnits: graphIus,
+                        graphInstallableUnitRequirements: graphRequirements))
+    }
+
+    protected generateDepthIusGraph(ius, iu, graphIus, graphRequirements) {
+        def iuIdVersion = "$iu.id:$iu.version.original"
+        if(graphIus.find{it.id == iuIdVersion} != null) {
+            return
+        }
+        def iuShape = 'triangle' // Default shape
+        def iuColor = '#555555' // Deafult color
+        def foundIuCapability = iu.providedCapabilities.find {
+            it.namespace == 'osgi.bundle' || it.name.endsWith('feature.group')
+        }
+        if (foundIuCapability != null) {
+            if (foundIuCapability.namespace == 'osgi.bundle') {
+                iuShape = 'dot'
+                iuColor = '#009688'
+            } else if (foundIuCapability.name.endsWith('feature.group')) {
+                iuShape = 'square'
+                iuColor = '#448aff'
+            }
+        }
+        graphIus << new GraphInstallableUnit(id: iuIdVersion, label: iuIdVersion, shape: iuShape, color: iuColor)
+        iu.requirements.each { IRequirement requirement ->
+            ius.findAll {
+                it.satisfies(requirement)
+            }.each { IInstallableUnit foundIu ->
+                def foundIuIdVersion = "$foundIu.id:$foundIu.version.original"
+                graphRequirements << new GraphInstallableUnitRequirement(
+                        from: iuIdVersion,
+                        to: foundIuIdVersion,
+                        arrows: 'to')
+                generateDepthIusGraph(ius, foundIu, graphIus, graphRequirements)
+            }
+        }
+    }
+
     @POST
     @Path("load")
     @Produces(MediaType.APPLICATION_JSON)
