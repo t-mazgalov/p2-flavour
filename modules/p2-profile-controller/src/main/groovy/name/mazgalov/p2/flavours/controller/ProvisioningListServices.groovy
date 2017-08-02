@@ -2,14 +2,7 @@ package name.mazgalov.p2.flavours.controller
 
 import com.google.gson.Gson
 import name.mazgalov.p2.flavours.controller.internal.ProfileProvisioningContext
-import name.mazgalov.p2.flavours.operations.ExistingResourceException
-import name.mazgalov.p2.flavours.operations.FrameworkOperator
-import name.mazgalov.p2.flavours.operations.MetadataRepositoryOperator
-import name.mazgalov.p2.flavours.operations.ProfilesCache
-import name.mazgalov.p2.flavours.operations.ProvisioiningListsCache
-import name.mazgalov.p2.flavours.operations.ProvisioningOptions
-import name.mazgalov.p2.flavours.operations.SimplifiedInstallableUnit
-import name.mazgalov.p2.flavours.operations.SimplifiedProvisioningList
+import name.mazgalov.p2.flavours.operations.*
 import org.eclipse.equinox.internal.p2.metadata.InstallableUnit
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository
 import org.osgi.service.component.annotations.Component
@@ -19,6 +12,7 @@ import org.osgi.service.component.annotations.ReferencePolicy
 
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 /**
  * Created on 24-Jul-17.
@@ -73,7 +67,9 @@ class ProvisioningListServices {
                     .createSimplifiedProvisioningList(
                     provisioningList.name, provisioningList.installableUnits)
         } catch (ExistingResourceException e) {
-            throw new WebApplicationException(e)
+            throw new WebApplicationException(
+                    Response.status(Response.Status.CONFLICT).entity(e.message).type(MediaType.TEXT_PLAIN).build()
+            )
         }
 
         createdProvisioningList

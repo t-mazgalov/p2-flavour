@@ -17,6 +17,7 @@ import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 /**
  * Created on 19-Jul-17.
@@ -48,7 +49,9 @@ class ProfileServices {
         try {
             profilesCache.createProfile(profile.name, profile.location)
         } catch (ExistingResourceException e) {
-            throw new WebApplicationException(e)
+            throw new WebApplicationException(
+                    Response.status(Response.Status.CONFLICT).entity(e.message).type(MediaType.TEXT_PLAIN).build()
+            )
         }
     }
 
@@ -59,7 +62,9 @@ class ProfileServices {
         try {
             profilesCache.setRunningProfile(id)
         } catch (ExistingResourceException e) {
-            throw new WebApplicationException(e)
+            throw new WebApplicationException(
+                    Response.status(Response.Status.CONFLICT).entity(e.message).type(MediaType.TEXT_PLAIN).build()
+            )
         }
     }
 
