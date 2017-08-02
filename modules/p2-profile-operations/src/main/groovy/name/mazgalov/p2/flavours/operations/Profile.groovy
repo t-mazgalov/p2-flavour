@@ -18,6 +18,6 @@ class Profile {
     @Override
     boolean equals(Object obj) {
         def profile = obj as Profile
-        id == profile.id
+        (id == profile.id) || (name == profile.name && location == profile.location)
     }
 }
