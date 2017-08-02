@@ -19,6 +19,7 @@ import org.osgi.service.component.annotations.ReferencePolicy
 
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 /**
  * Created on 05-Jul-17.
@@ -106,16 +107,17 @@ class RepositoryServices {
                 return
 
             def iuShape = 'triangle' // Default shape
-            def iuColor = '#555555' // Deafult color
+            def iuColor = '#4b0082' // Deafult color
             if(graphIuCapability.namespace == 'osgi.bundle') {
                 iuShape = 'dot'
-                iuColor = '#009688'
+                iuColor = '#008b8b'
             } else if(graphIuCapability.name.endsWith('feature.group')) {
                 iuShape = 'square'
-                iuColor = '#448aff'
+                iuColor = '#367761'
             }
             def iuIdVersion = "$iu.id:$iu.version.original"
-            graphIus << new GraphInstallableUnit(id: iuIdVersion, label: iuIdVersion, shape: iuShape, color: iuColor)
+            def iuIdLabel = "$iu.id\n$iu.version.original"
+            graphIus << new GraphInstallableUnit(id: iuIdVersion, label: iuIdLabel, shape: iuShape, color: iuColor)
             iu.requirements.each { IRequirement requirement ->
                 ius.findAll {
                     it.satisfies(requirement)
@@ -153,29 +155,7 @@ class RepositoryServices {
         def graphIus = []
         def graphRequirements = []
 
-        // TODO move to constants
-        // TODO find scalable solution. Display of large repositories is too slow, e.g. eclipse p2 repo
-        // TODO consider extraction of the colors and shapes in the UI bundle
-        def graphIuCapability = iu.providedCapabilities.find {
-            it.namespace == 'osgi.bundle' || it.name.endsWith('feature.group')
-        }
-
-        def iuShape = 'triangle' // Default shape
-        def iuColor = '#555555' // Deafult color
-        if(graphIuCapability != null) {
-            if (graphIuCapability.namespace == 'osgi.bundle') {
-                iuShape = 'dot'
-                iuColor = '#009688'
-            } else if (graphIuCapability.name.endsWith('feature.group')) {
-                iuShape = 'square'
-                iuColor = '#448aff'
-            }
-        }
-        def iuIdVersion = "$iu.id:$iu.version.original"
-
-
         generateDepthIusGraph(ius,iu,graphIus,graphRequirements)
-
 
         new Gson().toJson(
                 new GraphInstallableUnitData(
@@ -184,33 +164,34 @@ class RepositoryServices {
     }
 
     protected generateDepthIusGraph(ius, iu, graphIus, graphRequirements) {
-        def iuIdVersion = "$iu.id:$iu.version.original"
-        if(graphIus.find{it.id == iuIdVersion} != null) {
+        def visId = "$iu.id:$iu.version.original"
+        def visLabel = "$iu.id\n$iu.version.original"
+        if(graphIus.find{it.id == visId} != null) {
             return
         }
         def iuShape = 'triangle' // Default shape
-        def iuColor = '#555555' // Deafult color
+        def iuColor = '#4b0082' // Deafult color
         def foundIuCapability = iu.providedCapabilities.find {
             it.namespace == 'osgi.bundle' || it.name.endsWith('feature.group')
         }
         if (foundIuCapability != null) {
             if (foundIuCapability.namespace == 'osgi.bundle') {
                 iuShape = 'dot'
-                iuColor = '#009688'
+                iuColor = '#008b8b'
             } else if (foundIuCapability.name.endsWith('feature.group')) {
                 iuShape = 'square'
-                iuColor = '#448aff'
+                iuColor = '#367761'
             }
         }
-        graphIus << new GraphInstallableUnit(id: iuIdVersion, label: iuIdVersion, shape: iuShape, color: iuColor)
+        graphIus << new GraphInstallableUnit(id: visId, label: visLabel, shape: iuShape, color: iuColor)
         iu.requirements.each { IRequirement requirement ->
             ius.findAll {
                 it.satisfies(requirement)
             }.each { IInstallableUnit foundIu ->
-                def foundIuIdVersion = "$foundIu.id:$foundIu.version.original"
+                def foundVisId = "$foundIu.id:$foundIu.version.original"
                 graphRequirements << new GraphInstallableUnitRequirement(
-                        from: iuIdVersion,
-                        to: foundIuIdVersion,
+                        from: visId,
+                        to: foundVisId,
                         arrows: 'to')
                 generateDepthIusGraph(ius, foundIu, graphIus, graphRequirements)
             }
@@ -222,37 +203,61 @@ class RepositoryServices {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     def loadRepositories(RepositoryRegistration repositoryRegistration) {
-        if(repositoryRegistration.profileLocation.isEmpty() || repositoryRegistration.profileName.isEmpty()) {
-            throw new WebApplicationException("Invalid profile name and/or location")
+        def errorMessage
+        if (!repositoryRegistration.profileLocation?.trim()) {
+            errorMessage = "Invalid profile location"
         }
-
-        if(repositoryRegistration.metadataLocation.isEmpty() || repositoryRegistration.artifactsLocation.isEmpty()) {
+        if (!repositoryRegistration.profileName?.trim()) {
+            errorMessage = "Invalid profile name"
+        }
+        if (!repositoryRegistration.metadataLocation?.trim()) {
+            errorMessage = "Invalid metadata location"
+        }
+        if (!repositoryRegistration.artifactsLocation?.trim()) {
+            errorMessage = "Invalid artifacts location"
+        }
+        if(errorMessage) {
             throw new WebApplicationException(
-                    "Repository pair must be specified - metadata and artifacts")
+                    Response
+                            .status(Response.Status.BAD_REQUEST)
+                            .entity(errorMessage)
+                            .type(MediaType.TEXT_PLAIN)
+                            .build()
+            )
         }
 
-        def profile = profilesCache.profiles.find {
-            it.name == repositoryRegistration.profileName && it.location == repositoryRegistration.profileLocation
-        }
+        try {
+            def profile = profilesCache.profiles.find {
+                it.name == repositoryRegistration.profileName && it.location == repositoryRegistration.profileLocation
+            }
 
-        if(profile == null) {
+            if (profile == null) {
+                throw new WebApplicationException(
+                        "Cannot find profile $repositoryRegistration.profileName ($repositoryRegistration.profileLocation)")
+            }
+
+            IMetadataRepository metadataRepository = metadataRepositoryOperator.loadRepository(
+                    new URI(repositoryRegistration.metadataLocation),
+                    profile.agent)
+            artifactsRepositoryOperator.loadRepository(
+                    new URI(repositoryRegistration.artifactsLocation),
+                    profile.agent)
+
+            def ius = metadataRepositoryOperator.getInstallableUnits(metadataRepository)
+
+            // Using Gson instead of the Jersey parser because
+            // Jankson expect all used classes to be serializable.
+            // org.eclipse.equinox.internal.p2.metadata.VersionFormat is not
+            new Gson().toJson(ius)
+        } catch (Exception e) {
             throw new WebApplicationException(
-                    "Cannot find profile $repositoryRegistration.profileName ($repositoryRegistration.profileLocation)")
+                    Response
+                            .status(Response.Status.BAD_REQUEST)
+                            .entity(e.message)
+                            .type(MediaType.TEXT_PLAIN)
+                            .build()
+            )
         }
-
-        IMetadataRepository metadataRepository = metadataRepositoryOperator.loadRepository(
-                new URI(repositoryRegistration.metadataLocation),
-                profile.agent)
-        artifactsRepositoryOperator.loadRepository(
-                new URI(repositoryRegistration.artifactsLocation),
-                profile.agent)
-
-        def ius = metadataRepositoryOperator.getInstallableUnits(metadataRepository)
-
-        // Using Gson instead of the Jersey parser because
-        // Jankson expect all used classes to be serializable.
-        // org.eclipse.equinox.internal.p2.metadata.VersionFormat is not
-        new Gson().toJson(ius)
     }
 
     // Tomcat does NOT accept encoded slash as path parameter (%2F), so
