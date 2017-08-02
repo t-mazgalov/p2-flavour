@@ -16,6 +16,10 @@
     margin: 5px auto 0 auto;
 }
 
+md-toast.md-warn .md-toast-content{
+    background-color: orangered;
+}
+
 
 .metadata {
     padding: 3px;
