@@ -1,16 +1,19 @@
 angular
     .module('AppP2F')
     .controller('RepositoriesController', function($scope, $http, $mdDialog, $mdToast) {
-        $scope.iusGraphOptionsStabilized = function() {
-            console.log("iusGraphOptionsStabilizationIterationsDone done");
-            $scope.options.physics = false
+        $scope.iusGraphStabilizationIterationsDone = function() {
+            $scope.iusGraphOptions.physics = false;
+            $scope.$digest();
         }
-        $scope.options = {
+        $scope.$watchCollection('iusGraphOptions.nodes', function (nodes) {
+            $scope.iusGraphOptions.physics = true;
+        });
+        $scope.iusGraphOptions = {
             autoResize: true,
             height: '500',
             width: '100%',
-            nodes : {
-                font:{color:'#666666'},
+            nodes: {
+                font: {color:'#000000'},
                 "shadow": false
             },
             physics: {
@@ -32,7 +35,7 @@ angular
             }
         };
         $scope.iusGraphEvents = {
-            stabilizationIterationsDone: $scope.iusGraphOptionsStabilized
+            stabilizationIterationsDone: $scope.iusGraphStabilizationIterationsDone
         };
 
         $scope.checkCurrentProfile = function () {
@@ -87,18 +90,18 @@ angular
                 .then(function(response) {
                     var responseData = response.data;
                     for(i in responseData) {
+                        if(responseData[i].id.endsWith('.feature.group')) {
+                            responseData[i].iuType = 'feature';
+                            continue;
+                        }
                         if(responseData[i].artifacts.length > 0) {
                             var classifier = responseData[i].artifacts[0].classifier;
-                            if(classifier === 'org.eclipse.update.feature') {
-                                responseData[i].iuType = 'feature'
-                            } else if(classifier === 'osgi.bundle') {
-                                responseData[i].iuType = 'bundle'
-                            } else {
-                                responseData[i].iuType = 'installable-unit'
+                            if(classifier === 'osgi.bundle') {
+                                responseData[i].iuType = 'bundle';
+                                continue;
                             }
-                        } else {
-                            responseData[i].iuType = 'installable-unit'
                         }
+                        responseData[i].iuType = 'installable-unit';
                     }
                     $scope.ius = responseData;
                     $scope.listedRepoLocation = repoLocation;
@@ -127,7 +130,6 @@ angular
         }
 
         $scope.loadRepo = function() {
-            $scope.loadedRepoCard = true;
             $scope.disabledProgressListRepo = false;
 
             $http
@@ -135,8 +137,8 @@ angular
                 .then(function(response) {
                     var systemProfile = response.data;
                     var params = {
-                        'profileName': systemProfile.name,
-                        'profileLocation': systemProfile.location,
+                        'profileName': $scope.selectedProfile.name,
+                        'profileLocation': $scope.selectedProfile.location,
                         'metadataLocation': $scope.metadataLocation,
                         'artifactsLocation': $scope.artifactsLocation
                     };
@@ -144,23 +146,6 @@ angular
                     $http
                         .post("/rs/repos/load", params)
                         .then(function(loadResponse) {
-                            var responseData = loadResponse.data;
-                            for(i in responseData) {
-                                if(responseData[i].artifacts.length > 0) {
-                                    var classifier = responseData[i].artifacts[0].classifier;
-                                    if(classifier === 'org.eclipse.update.feature') {
-                                        responseData[i].iuType = 'feature'
-                                    } else if(classifier === 'osgi.bundle') {
-                                        responseData[i].iuType = 'bundle'
-                                    } else {
-                                        responseData[i].iuType = 'installable-unit'
-                                    }
-                                } else {
-                                    responseData[i].iuType = 'installable-unit'
-                                }
-                            }
-                            $scope.ius = responseData;
-                            $scope.listedRepoLocation = $scope.metadataLocation;
                             getRepos(); // Update repos
                             $scope.disabledProgressListRepo = true;
                         });
@@ -297,7 +282,7 @@ angular
                         "edges": iusGraphDataEdges
                     }
 
-                    console.log(provisioningListsDacData);
+                    $scope.iusGraphOptions.physics = true;
                     $scope.iusGraphData = provisioningListsDacData;
 
                     $scope.disabledProgressIusGraph = true;
@@ -321,7 +306,7 @@ angular
                         "edges": iusGraphDataEdges
                     }
 
-                    console.log(provisioningListsDacData);
+                    $scope.iusGraphOptions.physics = true;
                     $scope.iusGraphData = provisioningListsDacData;
 
                     $scope.disabledProgressIusGraph = true;
