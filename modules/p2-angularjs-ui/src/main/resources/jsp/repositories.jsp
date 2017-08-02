@@ -35,8 +35,8 @@
                            <img ng-src="img/icons/metadata.png" class="md-avatar" alt="Metadata Repository" />
                            <div class="md-list-item-text">
                                <h3>{{metadataRepository}}</h3>
-                               <p>Profile name: {{repo.profile.name}}, location: {{repo.profile.location}}</p>
-                               <p>Profile ID: {{repo.profile.id}}</p>
+                               <p>Profile location: {{repo.profile.location}}</p>
+                               <p>Profile name: {{repo.profile.name}}, Profile ID: {{repo.profile.id}}</p>
                            </div>
                            <md-icon class="material-icons"
                              ng-click="loadIusGraph(repo.profile.id, metadataRepository)">
@@ -62,42 +62,6 @@
                     </md-list>
                 </md-content>
             </md-card>
-        </div>
-        <div flex-xs flex-gt-xs="50" layout="column">
-            <md-card>
-                <md-card-header>
-                    <md-card-avatar>
-                        <md-icon class="material-icons">library_add</md-icon>
-                    </md-card-avatar>
-                    <md-card-header-text>
-                        <span class="md-title">Load P2 repository</span>
-                        <span class="md-subhead">Select P2 repository location</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-content layout-padding>
-                    <md-select
-                        placeholder="Select P2 profile"
-                        ng-model="selectedProfile"
-                        md-on-open="loadProfiles()">
-                        <md-option ng-value="profile" ng-repeat="profile in profiles">
-                            {{profile.name}} ({{profile.location}})
-                        </md-option>
-                    </md-select>
-                    <md-input-container class="md-block" flex-gt-sm>
-                        <label>P2 Metadata Repository</label>
-                        <input ng-model="metadataLocation">
-                    </md-input-container>
-                    <md-input-container class="md-block" flex-gt-sm>
-                        <label>P2 Artifact Repository</label>
-                        <input ng-model="artifactsLocation">
-                    </md-input-container>
-                    <md-button ng-click="loadRepo()" class="md-raised md-primary">Load</md-button>
-                </md-content>
-            </md-card>
-        </div>
-    </md-content>
-    <md-content class="md-padding" layout-xs="column" layout="row">
-        <div flex-xs flex-gt-xs="50" layout="column">
             <md-card ng-show="loadedRepoCard">
                 <md-card-header>
                     <md-card-avatar>
@@ -164,6 +128,36 @@
             </md-card>
         </div>
         <div flex-xs flex-gt-xs="50" layout="column">
+            <md-card>
+                <md-card-header>
+                    <md-card-avatar>
+                        <md-icon class="material-icons">library_add</md-icon>
+                    </md-card-avatar>
+                    <md-card-header-text>
+                        <span class="md-title">Load P2 repository</span>
+                        <span class="md-subhead">Select P2 repository location</span>
+                    </md-card-header-text>
+                </md-card-header>
+                <md-content layout-padding>
+                    <md-select
+                        placeholder="Select P2 profile"
+                        ng-model="selectedProfile"
+                        md-on-open="loadProfiles()">
+                        <md-option ng-value="profile" ng-repeat="profile in profiles">
+                            {{profile.name}} ({{profile.location}})
+                        </md-option>
+                    </md-select>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>P2 Metadata Repository</label>
+                        <input ng-model="metadataLocation">
+                    </md-input-container>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>P2 Artifact Repository</label>
+                        <input ng-model="artifactsLocation">
+                    </md-input-container>
+                    <md-button ng-click="loadRepo()" class="md-raised md-primary">Load</md-button>
+                </md-content>
+            </md-card>
             <md-card ng-show="iusGraphData">
                 <md-card-header>
                   <md-card-avatar>
@@ -177,7 +171,7 @@
                 <md-content>
                     <md-progress-linear md-mode="indeterminate" ng-disabled="disabledProgressIusGraph">
                     </md-progress-linear>
-                    <vis-network data="iusGraphData" options="options" events="iusGraphEvents"></vis-network>
+                    <vis-network data="iusGraphData" options="iusGraphOptions" events="iusGraphEvents"></vis-network>
                 </md-content>
             </md-card>
             <md-card ng-show="currentProvList">
