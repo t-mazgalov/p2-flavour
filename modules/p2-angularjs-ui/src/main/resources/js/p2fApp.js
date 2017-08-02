@@ -24,7 +24,40 @@ angular
             templateUrl: 'jsp/provisioning.jsp'
         })
     })
-    .controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $route, $routeParams, $location) {
+    .config(['$httpProvider', function($httpProvider) {
+        $httpProvider.interceptors.push(['$rootScope', '$q', '$injector', function($rootScope, $q, $injector) {
+            var toaster;
+
+            function getToaster() {
+              if (!toaster) {
+                toaster = $injector.get("$mdToast");
+              }
+              return toaster;
+            }
+
+            return {
+                'responseError': function(response) {
+                    getToaster().show(
+                      getToaster().simple()
+                        .textContent("ERROR: " + response.data)
+                        .toastClass('md-warn')
+                        .position('bottom right')
+                        .hideDelay(3000)
+                    );
+
+                    return $q.reject(response);
+                }
+            };
+        }]);
+    }])
+    .controller('AppCtrl', function (
+                                $scope,
+                                $timeout,
+                                $mdSidenav,
+                                $route,
+                                $routeParams,
+                                $location
+                                ) {
         $scope.toggleLeft = buildToggler('left');
 
         $scope.$route = $route;
@@ -35,6 +68,5 @@ angular
           return function() {
             $mdSidenav(componentId).toggle();
           };
-        }
-    })
-;
+        };
+    });
